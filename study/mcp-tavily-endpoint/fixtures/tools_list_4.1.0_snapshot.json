@@ -1,0 +1,320 @@
+{
+  "_note": "mcp-tavily serverInfo 4.1.0 时期的 tools/list 缓存副本（每个工具含 timeout 入参，4.1.3 已移除）",
+  "result": {
+    "tools": [
+      {
+        "name": "tavily-search",
+        "title": "Tavily Search",
+        "inputSchema": {
+          "properties": {
+            "query": {
+              "type": "string"
+            },
+            "search_depth": {
+              "default": "basic",
+              "type": "string"
+            },
+            "topic": {
+              "default": "general",
+              "type": "string"
+            },
+            "days": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "max_results": {
+              "default": 5,
+              "type": "integer"
+            },
+            "include_images": {
+              "default": false,
+              "type": "boolean"
+            },
+            "include_answer": {
+              "default": false,
+              "type": "boolean"
+            },
+            "include_raw_content": {
+              "default": false,
+              "type": "boolean"
+            },
+            "include_domains": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "exclude_domains": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "time_range": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "include_image_descriptions": {
+              "default": false,
+              "type": "boolean"
+            },
+            "timeout": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "tavily-extract",
+        "title": "Tavily Extract",
+        "inputSchema": {
+          "properties": {
+            "urls": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "extract_depth": {
+              "default": "basic",
+              "type": "string"
+            },
+            "include_images": {
+              "default": false,
+              "type": "boolean"
+            },
+            "timeout": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "urls"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "tavily-crawl",
+        "title": "Tavily Crawl",
+        "inputSchema": {
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "max_depth": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "max_breadth": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "limit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "instructions": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "select_paths": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "exclude_paths": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "include_images": {
+              "default": false,
+              "type": "boolean"
+            },
+            "allow_external": {
+              "default": false,
+              "type": "boolean"
+            },
+            "timeout": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "tavily-map",
+        "title": "Tavily Map",
+        "inputSchema": {
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "max_depth": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "limit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "select_paths": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "timeout": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "result": {
+    "content": [
+      {
+        "text": "{\"base_url\":\"https://example.com\",\"results\":[],\"response_time\":0.08,\"request_id\":\"97d6740a-6b05-4839-acf0-fff3f1e15919\"}",
+        "type": "text"
+      }
+    ],
+    "isError": false,
+    "structuredContent": {
+      "base_url": "https://example.com",
+      "results": [],
+      "response_time": 0.08,
+      "request_id": "97d6740a-6b05-4839-acf0-fff3f1e15919"
+    }
+  }
+}

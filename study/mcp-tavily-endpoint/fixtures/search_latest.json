@@ -1,0 +1,39 @@
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "result": {
+    "content": [
+      {
+        "text": "{\"query\": \"示例股份 2026 半年报 营收\", \"follow_up_questions\": null, \"answer\": \"示意答案：两份来源都只给出同比增长区间，未披露确切营收数字。\", \"images\": [], \"results\": [{\"url\": \"https://example.com/research/2026-h1-preview\", \"title\": \"示例股份 2026 半年报前瞻（示意数据）• 营收与利润率区间\", \"content\": \"示意数据：营业收入同比 +6%～+9%，归母净利润同比 +12%～+19%，毛利率 36.5%～37.5%，净利率 12.3%～12.8%。本条为脱敏示例，不代表任何真实公司的财务数据。\", \"score\": 0.97135013, \"raw_content\": null, \"id\": \"a1b2c3-00\"}, {\"url\": \"https://example.org/disclosure/2026-notice\", \"title\": \"示例股份有限公司 关于半年度业绩预告的说明公告\", \"content\": \"公司公告称：本期营业收入与净利润均较上年同期有所增长，详细财务数据以正式披露的半年度报告为准。\\n\\n单位：元　币种：人民币\", \"score\": 0.9551898, \"raw_content\": null, \"id\": \"d4e5f6-01\"}], \"response_time\": 2.24, \"request_id\": \"00000000-0000-4000-8000-000000000003\"}",
+        "type": "text"
+      }
+    ],
+    "isError": false,
+    "structuredContent": {
+      "query": "示例股份 2026 半年报 营收",
+      "follow_up_questions": null,
+      "answer": "示意答案：两份来源都只给出同比增长区间，未披露确切营收数字。",
+      "images": [],
+      "results": [
+        {
+          "url": "https://example.com/research/2026-h1-preview",
+          "title": "示例股份 2026 半年报前瞻（示意数据）• 营收与利润率区间",
+          "content": "示意数据：营业收入同比 +6%～+9%，归母净利润同比 +12%～+19%，毛利率 36.5%～37.5%，净利率 12.3%～12.8%。本条为脱敏示例，不代表任何真实公司的财务数据。",
+          "score": 0.97135013,
+          "raw_content": null,
+          "id": "a1b2c3-00"
+        },
+        {
+          "url": "https://example.org/disclosure/2026-notice",
+          "title": "示例股份有限公司 关于半年度业绩预告的说明公告",
+          "content": "公司公告称：本期营业收入与净利润均较上年同期有所增长，详细财务数据以正式披露的半年度报告为准。\n\n单位：元　币种：人民币",
+          "score": 0.9551898,
+          "raw_content": null,
+          "id": "d4e5f6-01"
+        }
+      ],
+      "response_time": 2.24,
+      "request_id": "00000000-0000-4000-8000-000000000003"
+    }
+  }
+}

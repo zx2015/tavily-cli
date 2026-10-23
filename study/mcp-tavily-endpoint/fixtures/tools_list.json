@@ -1,0 +1,355 @@
+{
+  "_captured": {
+    "endpoint": "http://127.0.0.1:18000/mcp",
+    "serverInfo": {
+      "name": "mcp-tavily",
+      "version": "4.1.3"
+    },
+    "protocolVersion": "2025-06-18",
+    "method": "initialize + tools/list（零上游调用）"
+  },
+  "result": {
+    "tools": [
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "description": "使用 Tavily AI 搜索引擎执行强大的网页搜索。返回相关的网页内容，支持自定义结果数量、内容类型和域名过滤。非常适合获取当前信息、新闻和详细的网页内容分析。",
+        "inputSchema": {
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query text."
+            },
+            "search_depth": {
+              "default": "basic",
+              "enum": [
+                "basic",
+                "advanced"
+              ],
+              "type": "string",
+              "description": "Search quality preset, basic or advanced."
+            },
+            "topic": {
+              "default": "general",
+              "enum": [
+                "general",
+                "news",
+                "finance"
+              ],
+              "type": "string",
+              "description": "Search category: general, news, or finance."
+            },
+            "days": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "News lookback window in days."
+            },
+            "max_results": {
+              "default": 5,
+              "type": "integer",
+              "description": "Maximum number of returned results."
+            },
+            "include_images": {
+              "default": false,
+              "type": "boolean",
+              "description": "Include image results."
+            },
+            "include_answer": {
+              "default": false,
+              "type": "boolean",
+              "description": "Include a generated answer."
+            },
+            "include_raw_content": {
+              "default": false,
+              "type": "boolean",
+              "description": "Include raw page content."
+            },
+            "include_domains": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Restrict results to these domains."
+            },
+            "exclude_domains": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Exclude results from these domains."
+            },
+            "time_range": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "day",
+                    "week",
+                    "month",
+                    "year"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Restrict results to a calendar range."
+            },
+            "include_image_descriptions": {
+              "default": false,
+              "type": "boolean",
+              "description": "Include descriptions for image results."
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "tavily-search",
+        "title": "Tavily Search"
+      },
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "description": "强大的网页内容提取工具，从指定 URL 获取并处理原始内容。非常适合数据采集、内容分析和研究任务。",
+        "inputSchema": {
+          "properties": {
+            "urls": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "URLs to extract."
+            },
+            "extract_depth": {
+              "default": "basic",
+              "enum": [
+                "basic",
+                "advanced"
+              ],
+              "type": "string",
+              "description": "Extraction detail preset, basic or advanced."
+            },
+            "include_images": {
+              "default": false,
+              "type": "boolean",
+              "description": "Include image URLs found on each page."
+            }
+          },
+          "required": [
+            "urls"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "tavily-extract",
+        "title": "Tavily Extract"
+      },
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "description": "系统性地探索和爬取网站。从起始 URL 开始，像树一样扩展并遵循内部链接。可以控制深度、广度，并引导爬虫关注特定部分。",
+        "inputSchema": {
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Starting URL for the crawl."
+            },
+            "max_depth": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Maximum link depth."
+            },
+            "max_breadth": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Maximum links followed per page."
+            },
+            "limit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Maximum total pages to process."
+            },
+            "instructions": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Natural-language crawl guidance."
+            },
+            "select_paths": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Path patterns to include."
+            },
+            "exclude_paths": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Path patterns to exclude."
+            },
+            "include_images": {
+              "default": false,
+              "type": "boolean",
+              "description": "Include images from crawled pages."
+            },
+            "allow_external": {
+              "default": false,
+              "type": "boolean",
+              "description": "Follow links outside the starting domain."
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "tavily-crawl",
+        "title": "Tavily Crawl"
+      },
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "description": "创建网站 URL 的结构化地图。用于发现和分析站点结构、内容组织和导航路径。非常适合站点审计和内容发现。",
+        "inputSchema": {
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Starting URL for the site map."
+            },
+            "max_depth": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Maximum discovery depth."
+            },
+            "limit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Maximum number of discovered URLs."
+            },
+            "select_paths": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Path patterns to include."
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "tavily-map",
+        "title": "Tavily Map"
+      }
+    ]
+  }
+}

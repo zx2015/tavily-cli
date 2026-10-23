@@ -1,0 +1,39 @@
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "result": {
+    "content": [
+      {
+        "text": "{\"query\":\"Tavily API pricing\",\"follow_up_questions\":null,\"answer\":null,\"images\":[],\"results\":[{\"url\":\"https://docs.tavily.com/faq/faq\",\"title\":\"Frequently Asked Questions - Tavily Docs\",\"content\":\"Can I test Tavily Search API before subscribing to a paid plan?\\n\\nYes! Tavily offers a free plan with limited monthly API calls, allowing you to test its capabilities before committing to a paid plan. No credit card is required.\\n\\n \\n\\nWhat are the available pricing plans?\\n\\n Free: 1,000 credits/month\\n Pay-as-you-go: $0.008 per credit\\n Monthly plans: $0.0075 - $0.005 per credit\\n Enterprise: Custom pricing and volume\\n\\n \\n\\nWhen do my monthly API credits reset?\",\"score\":0.8812988,\"raw_content\":null,\"id\":\"bcb923-00\"},{\"url\":\"https://www.firecrawl.dev/blog/tavily-alternatives\",\"title\":\"5 Tavily Alternatives for Better Pricing, Performance, and Extraction Depth\",\"content\":\"| Feature | Brave Search API | Tavily |\\n --- \\n| Primary use case | Independent search, privacy-focused RAG | Search & discovery with aggregation |\\n| Search index | Independent (30B+ pages, 100M daily updates) | Aggregated from multiple sources |\\n| Pricing | $5-9 per 1K requests | $8 per 1K PAYG basic search |\\n| Free tier | 2,000 queries/month, 1 query/second | 1,000 credits/month |\\n| Rate limits | Up to 50 queries/second (Pro AI) | Variable based on plan | [...] | Feature | Perplexity Sonar API | Tavily |\\n --- \\n| Primary use case | Cited answers with sources | Search & discovery |\\n| Search method | Live web crawl + LLM processing | Multi-source aggregation |\\n| Output format | Summarized answers with citations | Structured results with raw content via `include_raw_content` or `/extract` |\\n| Pricing | $1 per 1M tokens + $5-12 per 1K requests | $0.008/credit PAYG basic search ($8 per 1K) |\\n| Free tier | 100 queries/day | 1,000 credits/month |\",\"score\":0.87113565,\"raw_content\":null,\"id\":\"e52889-01\"}],\"response_time\":1.02,\"request_id\":\"d0df3237-0fc3-40a9-8224-1663285f9053\"}",
+        "type": "text"
+      }
+    ],
+    "isError": false,
+    "structuredContent": {
+      "query": "Tavily API pricing",
+      "follow_up_questions": null,
+      "answer": null,
+      "images": [],
+      "results": [
+        {
+          "url": "https://docs.tavily.com/faq/faq",
+          "title": "Frequently Asked Questions - Tavily Docs",
+          "content": "Can I test Tavily Search API before subscribing to a paid plan?\n\nYes! Tavily offers a free plan with limited monthly API calls, allowing you to test its capabilities before committing to a paid plan. No credit card is required.\n\n \n\nWhat are the available pricing plans?\n\n Free: 1,000 credits/month\n Pay-as-you-go: $0.008 per credit\n Monthly plans: $0.0075 - $0.005 per credit\n Enterprise: Custom pricing and volume\n\n \n\nWhen do my monthly API credits reset?",
+          "score": 0.8812988,
+          "raw_content": null,
+          "id": "bcb923-00"
+        },
+        {
+          "url": "https://www.firecrawl.dev/blog/tavily-alternatives",
+          "title": "5 Tavily Alternatives for Better Pricing, Performance, and Extraction Depth",
+          "content": "| Feature | Brave Search API | Tavily |\n --- \n| Primary use case | Independent search, privacy-focused RAG | Search & discovery with aggregation |\n| Search index | Independent (30B+ pages, 100M daily updates) | Aggregated from multiple sources |\n| Pricing | $5-9 per 1K requests | $8 per 1K PAYG basic search |\n| Free tier | 2,000 queries/month, 1 query/second | 1,000 credits/month |\n| Rate limits | Up to 50 queries/second (Pro AI) | Variable based on plan | [...] | Feature | Perplexity Sonar API | Tavily |\n --- \n| Primary use case | Cited answers with sources | Search & discovery |\n| Search method | Live web crawl + LLM processing | Multi-source aggregation |\n| Output format | Summarized answers with citations | Structured results with raw content via `include_raw_content` or `/extract` |\n| Pricing | $1 per 1M tokens + $5-12 per 1K requests | $0.008/credit PAYG basic search ($8 per 1K) |\n| Free tier | 100 queries/day | 1,000 credits/month |",
+          "score": 0.87113565,
+          "raw_content": null,
+          "id": "e52889-01"
+        }
+      ],
+      "response_time": 1.02,
+      "request_id": "d0df3237-0fc3-40a9-8224-1663285f9053"
+    }
+  }
+}
