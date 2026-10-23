@@ -103,6 +103,12 @@ tunnel   = "auto"
 手工建/看/收回用 `scripts/tunnel.sh`（`status|up|down`）。
 这套流程已于 2026-10-23 以**零配额**方式真机演练通过（全程只发 `initialize` + `tools/list`）。
 
+⚠️ `auto` 是**缺省值**，所以"没写旗标"不等于"不碰 ssh"：真机实测端点不可达时，一次普通的
+`tavily-cli tools` 会自己 spawn 一条到网关主机的 SSH 端口转发并返回退出码 0（本机凭空多一个转发
+进程）。脚本或 agent 若不该动共享基础设施，必须显式写 `--tunnel off` —— 同一坏端点下它是退出码 3 /
+`TRANSPORT` 且不产生任何 ssh 进程。给别的 agent 用的 [`skills/tavily-search/`](skills/tavily-search/)
+因此把每一条示例都钉上了该旗标。
+
 ## 退出码
 
 退出码：`0` 成功 · `2` 参数校验失败（不出网） · `3` 网络不可达 · `4` 协议异常 ·
@@ -120,8 +126,26 @@ tunnel   = "auto"
 | [`docs/requirements.md`](docs/requirements.md) | 需求文档：目标、命令面、输出契约、验收标准、里程碑 |
 | [`docs/design.md`](docs/design.md) | 技术设计：分层架构、模块职责、传输细节、性能预算 |
 | [`docs/adr/`](docs/adr/) | 决策记录：传输层选型 / 错误分类与退出码 / 校验前置 |
+| [`docs/skill-spec.md`](docs/skill-spec.md) | Agent Skill 的规格：首次运行自举、能力路由、发布面义务、验收 SK-1–SK-12 |
+| [`skills/tavily-search/`](skills/tavily-search/) | 给**别的 agent** 加载的技能正文 + 三份 `references/`（纯文档，不被 import、不打包） |
 | [`docs/requirements.md` §12](docs/requirements.md) | 7 项使用者决策记录 D-1…D-7（命令名、语言、里程碑、分发方式、服务端缺陷处置、`--request-timeout` 语义、契约测试配额闸门） |
 | [`study/mcp-tavily-endpoint/`](study/mcp-tavily-endpoint/) | 服务端实测报告 + 可复跑探针 + 原始响应 fixture（已脱敏） |
+
+## 给其他 agent 用（Agent Skill）
+
+仓库带了一个可直接加载的技能：[`skills/tavily-search/SKILL.md`](skills/tavily-search/SKILL.md)。
+它面向"宿主 agent 没有原生 web search 工具"的场景，教的是本 CLI 的**机器可解析**调用形态：
+
+```bash
+tavily-cli search "<查询词>" -f json --keys-en --quiet --tunnel off --max-results 5
+```
+
+技能正文按"先判定该不该由它来搜 → 再探测调用形态 → 找不到才问用户安装 → 端点能探到就不问"
+的顺序自举，安装位置与形态记在 `~/.config/tavily-cli/skill-state.toml`（只写用户目录，绝不进仓库）。
+它**不采集任何 API Key**（这个网关不鉴权），也**不执行服务端运维动作**——不重启容器、不起 SSH 隧道
+（每一条示例都显式 `--tunnel off`，理由见上一节的实测）。规格与验收口径在
+[`docs/skill-spec.md`](docs/skill-spec.md)，行为由 `tests/unit/test_skill_contract.py` 逐条守着，
+其中正文里那个 shell 发现块是**真的被抽出来执行**的（临时 HOME、精简 PATH、零配额）。
 
 ## 安装与运行
 

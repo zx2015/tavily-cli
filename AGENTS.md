@@ -14,7 +14,9 @@
 
 **当前状态**：M1 + M2 已完成并通过真机验收（`search`/`extract`/`crawl`/`map`/`tools`/`doctor`
 + 隧道降级 + 四级配置 + TTY 着色）；M3（`batch` 流式 + 并发上限 + schema 漂移告警）代码与
-离线断言已交付。离线单测 **366** 条全绿零网络。契约层按**配额消耗**分四档闸门
+离线断言已交付；另有一个**给其他 agent 加载的技能** `skills/tavily-search/`（含首次运行自举、
+退出码分支、配额节制，且**每一条命令示例都显式 `--tunnel off`**——见 §4 那条"不写旗标 ≠ 中立"）。
+离线单测 **386** 条全绿零网络。契约层按**配额消耗**分四档闸门
 （默认 `-m network` 零配额 / `TAVILY_CONTRACT_QUOTA=1` / `TAVILY_ALLOW_DESTRUCTIVE=1` /
 `TAVILY_CONTRACT_HEAVY=1`）。`M3` 的真机并发压测（约 20 个真实 `tools/call`）尚未执行，
 那是一笔新的共享配额支出，需要网关运维方点头。
@@ -22,6 +24,8 @@
 | 文档 | 用途 | 改动须知 |
 |------|------|----------|
 | `docs/requirements.md` | 需求基线（命令面、输出契约、退出码、验收标准） | 改命令语义前必须先与维护者确认 |
+| `docs/skill-spec.md` | **技能**这一层的规格（自举、能力路由、发布面义务、验收 SK-1–SK-12） | 改 `skills/` 里的任何措辞前先读它；技能与 CLI 口径冲突时改技能，不动 CLI 契约 |
+| `skills/tavily-search/SKILL.md` | 给别的 agent 逐字执行的技能正文（≤170 行预算） | 只允许**指路** CLI 契约，复述必然漂移；新增内容先量行数 |
 | `docs/design.md` | 如何实现（分层、模块签名、传输细节、性能预算） | 实现偏离时更新本文，不要悄悄改代码留文档过期 |
 | `docs/adr/000{1,2,3}-*.md` | 三条关键决策及其实测依据 | 只增不删；推翻旧决策请新开 ADR 并把旧文件状态改为 `Superseded` |
 | `study/mcp-tavily-endpoint/README.md` | **服务端接口事实来源**（实测，非 README 转述） | 服务端有任何变化先更新这里，再改代码 |
@@ -120,6 +124,11 @@ scripts/tunnel.sh down && (ss -ltn | grep -w 18000 || echo 已释放)
 | `map` 的 `results` 是**裸 URL 字符串** | 真机首跑 `map … -f table`/`md` 抛 `AttributeError`；`-f json` 却"看着正常"，机读格式掩盖了它 | `build_envelope` 按 `_BARE_STRING_KEY` 包成 `{"url": …}`（D-8）；`-f raw` 保持服务端原样 |
 | `crawl` 的页面**没有 `title`** | 实测条目键只有 `url` + `raw_content` | 表头按"整列皆空则省略"自动去掉标题列（既有规则正确工作） |
 | "是列表"式契约断言在空载荷上恒真 | 不可爬的目标返回 `成功: true` + **0 页**，`isinstance(页面, list)` 照样绿；fixture 的 `results` 也是空数组 | HEAVY 断言改为"目标可爬 + 结果非空 + 逐条看字段 + 真渲染 table/md" |
+| 技能的"装完立刻记录"会记下不存在的路径 | 自举实跑（临时 HOME + 精简 PATH）：`pip install -e` 要先拉构建后端 `hatchling`，PyPI 不可达时**整条失败**、`bin/tavily-cli` 根本不存在，而原稿紧接着就把它写进状态文件 ⇒ 下一轮探测读出**假命中**，第一条搜索撞 `No such file or directory` | 状态文件只在 `--version` 退出码 0 之后写；装不上但本地有源码 ⇒ 改记 `mode = "source"`。回归防线：`test_state_is_written_only_after_a_verified_launch` |
+| 发现块的产物必须是"调用形态"，不是一个路径 | 只记 `binary` 的机器装不上时每轮都要重问用户；形态一旦被后面的 PATH/venv 探测无条件覆盖，记录就等于没记 | 状态文件记 `mode` + `binary`/`source_root`，每步前用 `[ -n "$RUNNER" ]` 守；调用统一成 `run` 助手 |
+| 技能里的 shell 块是**会被逐字执行**的东西 | 光靠读措辞发现不了：裸 `python3 -m tavily_cli` 在仓库根报 `No module named`、`tools` 的清单在 `.results[]` 而不是 `.tools`，都是实跑才打出来的 | `tests/unit/test_skill_contract.py` 把文档第一个 bash 块抽出来真跑（干净环境 / 两种记录形态 / 失效路径），全程离线 |
+| **不写隧道旗标 ≠ 中立**：缺省 `auto` 会自己 spawn SSH 转发 | `tunnel` 的缺省值是 `auto`；真机在不可达端点上跑 `tools` **退出码 0**，本机却凭空多出一条 `ssh -f -N … -L`（占住本地转发端口）——调用方只是 agent 的一次"搜个网"，却动了共享基础设施。加 `--tunnel off` 后同一端点 ⇒ 退出码 **3** / `TRANSPORT` 且 SSH 进程数前后不变 | 任何**会被别人 agent 原样复制**的命令示例都必须显式写 `--tunnel off`（技能面 14/14，`test_every_invocation_pins_the_tunnel_off` 逐行守）；自己排障时也要记住：`auto` 的"成功"可能是隧道替你兜的 |
+| 失败提示会主动劝你开隧道，且 `--quiet` 压不掉 | TRANSPORT 的 `hint` 原文是"确认端点可达；必要时加 `--tunnel on` 走 SSH 隧道"，它在 **JSON 信封** `.error.hint` 里（`--quiet` 只压 stderr 的提示），机读格式照样带出来 | 技能正文必须写明"不照 `hint` 行动"；写文档时别整段转述 hint——公开面的技能面闸门会拦下那个旗标字面 |
 
 ## 5. 代码约定
 

@@ -45,8 +45,8 @@ API Key，对外以 **MCP Streamable HTTP**（默认端点 `http://127.0.0.1:180
 | G-2 | 覆盖服务端全部 4 个工具，参数与服务端 `tools/list` 契约一致 |
 | G-3 | **零污染**：CLI 绝不向共享服务发出会让 Key 池进入 `ERROR` 终态的请求 |
 | G-4 | 失败可判定：不同失败原因给出不同退出码与人话错误，脚本能据此分支处理 |
-| G-5 | 面向 agent 友好：非 TTY 时默认输出稳定 JSON，启动开销小，无交互式提问 |
-| G-6 | 网络受限时可一键降级到 SSH 隧道，不需要用户手写 `ssh -L` |
+| G-5 | 面向 agent 友好：非 TTY 时默认输出稳定 JSON，启动开销小，无交互式提问（agent 面已落成 `skills/tavily-search/`，规格见 `docs/skill-spec.md`） |
+| G-6 | 网络受限时可一键降级到 SSH 隧道，不需要用户手写 `ssh -L`（⚠️ 缺省 `auto` 对 agent 是**副作用**：端点不可达时它会自己 spawn 转发且退出码 0，故技能侧每条示例显式 `--tunnel off`，见 skill-spec R-11） |
 
 ### 2.2 非目标（本期明确不做）
 

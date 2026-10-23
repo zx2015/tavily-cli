@@ -38,10 +38,15 @@ tavily-cli/
 ├── docs/
 │   ├── requirements.md        # 需求文档（需求基线，改动需谨慎）
 │   ├── design.md              # 本文
+│   ├── skill-spec.md          # 技能层的规格（自举、能力路由、发布面义务、SK-1–SK-12）
 │   └── adr/                   # 决策记录：一条决策一个文件，只增不删
 │       ├── 0001-transport-layer.md
 │       ├── 0002-error-taxonomy-and-exit-codes.md
 │       └── 0003-validate-before-send.md
+├── skills/                    # 给**别的 agent** 加载的 Agent Skill（纯文档，不被 import、不打包）
+│   └── tavily-search/
+│       ├── SKILL.md           # 技能正文（YAML frontmatter + ≤170 行；里的 shell 块会被逐字执行）
+│       └── references/        # 渐进披露：exit-codes.md / output-fields.md / other-commands.md
 ├── study/                     # 调研与证据（不可被代码 import）
 │   ├── index.md
 │   └── mcp-tavily-endpoint/
@@ -73,7 +78,10 @@ tavily-cli/
 ```
 
 约定：`study/` 只放证据与探针，**代码不得 import study/**；`fixtures/` 是测试数据源，
-不是断言对象（服务端会变）。
+不是断言对象（服务端会变）。`skills/` 是**文档不是代码**：`src/` 不 import 它、`pyproject.toml`
+不打包它（技能随仓库走，由各 runtime 的技能目录机制加载）；但它正文里的 shell 块会被别人的
+agent **逐字执行**，所以 `tests/unit/test_skill_contract.py` 会抽出第一个 bash 块真跑（临时 HOME、
+精简 PATH、全程零配额），并把每一条命令示例逐行断言到 `--tunnel off`。
 
 ## 3. 分层架构
 
