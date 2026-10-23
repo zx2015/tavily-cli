@@ -1,0 +1,26 @@
+# 密钥绝不入库（网关不需要 Key，本仓库任何文件都不该出现 Tavily Key）
+.env
+.env.*
+!.env.example
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# 工具与本地状态
+.tavily-cli.toml
+.coverage
+htmlcov/
+.idea/
+.vscode/
+*.log

@@ -1,0 +1,29 @@
+[project]
+name = "tavily-cli"
+version = "0.1.0"
+description = "命令行调用自建 mcp-tavily 聚合网关（搜索/提取/爬取/站点地图）"
+requires-python = ">=3.11"
+# 依 ADR-0001：运行时零第三方依赖，只用标准库（urllib/json/tomllib/argparse）。
+dependencies = []
+
+[project.scripts]
+tavily-cli = "tavily_cli.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tavily_cli"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-m 'not network'"
+markers = [
+    "network: 需要连通真实 mcp-tavily 端点（默认不执行）",
+    "guard: 断言非法入参零 socket 写入的防污染回归用例",
+]
