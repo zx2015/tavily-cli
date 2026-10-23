@@ -147,6 +147,20 @@ tavily-cli search "<查询词>" -f json --keys-en --quiet --tunnel off --max-res
 [`docs/skill-spec.md`](docs/skill-spec.md)，行为由 `tests/unit/test_skill_contract.py` 逐条守着，
 其中正文里那个 shell 发现块是**真的被抽出来执行**的（临时 HOME、精简 PATH、零配额）。
 
+### 怎么装进宿主 agent
+
+技能是**目录**，不是包：把 `skills/tavily-search/` 整个复制到宿主的技能根即可，无需安装步骤。
+
+```bash
+cp -a skills/tavily-search ~/.qoder-cn/skills/     # Qoder（本机实测生效的技能根）
+```
+
+验收判据不是"文件在那儿"，而是**新开一个会话**能看到名为 `tavily-search` 的条目、且 agent 能读出正文
+（技能清单在会话开始时冻结，同会话内刚放进去通常看不到）。⚠️ 应用界面里"Skill 安装到本机
+`~/.qoder/skills`"这句文案在实测的构建上不生效——放进去的新会话读不到，以 `<config root>/skills/`
+（与 `plugins/`、`settings.json` 同一个根）为准。Claude Code / Codex 各自的技能根尚未在本机验证，
+但格式相同（`<root>/<技能名>/SKILL.md`，`name` 等于目录名）。
+
 ## 安装与运行
 
 以下命令统一走本仓库的虚拟环境 `.venv`（本文写作时为 Python 3.14.4），**不使用 `uv tool install`**：

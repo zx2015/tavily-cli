@@ -6,6 +6,7 @@
 | v0.2.0 | 2026-10-23 | 按使用者四条口径重写关键路径：**§5 改为"首次运行自举"**（探测常见 venv → 找不到就问用户并建议路径 → 建 venv 装 CLI → 把位置记进 `~/.config/tavily-cli/skill-state.toml`，端点同样首次采集并写进 CLI 自己的用户级配置）；**API Key 一项按实测驳回**（传输层零鉴权头、配置层未知键即退出码 2，故本期不采集，另开 D-S9 供拍板）；**§6.1 取消单轮搜索次数上限**并把它记成显式接受的风险 R-7；**新增 §6.2 能力路由**（宿主无原生 web search ⇒ 有搜索需求即直接用本技能；有原生工具 ⇒ 仅当用户点名 tavily 才激活），并规定该判定同时写进 `description` 与正文第一步。目标增至 9 条、验收 12 条、决策表扩到 14 项（其中 D-S3 随本次口径直接定稿），正文行数预算 120 → 170 | Qoder |
 | v0.2.1 | 2026-10-23 | 按**实跑自举**（临时 HOME + 精简 PATH，全程零配额）修掉 §5 的五处：① §5.2 新增**先验证再记录**——`pip install -e` 拉不到构建后端 `hatchling` 时整条失败、`bin/tavily-cli` 不存在，原稿"装完立刻记录"会让下一轮探测读出假命中；② §5.4 状态文件改为**两形态**记录（`mode = binary` / `mode = source`），装不了的机器也能被 §5.2 第 1 步读回来，否则每个会话重问一遍；③ §5.2 第 5 步的零安装兜底修正为 `PYTHONPATH=<repo>/src python3 -m tavily_cli`（裸 `-m tavily_cli` 实测报 `No module named`）；④ §5.3 新增**先探测再问**——四层配置都空时内置 `DEFAULT_ENDPOINT` 是第五层且不落在任何文件里，实测零配额 `tools` 探测退出码 0，故探测成功就不打断用户；⑤ §5.3 补上 `tools` 信封的**实测形状**（清单在 `.results[]`、每条 `{name, description, inputSchema, title}`、`.tool = tools/list`）。同时把发现块产物统一成 `run` 调用形态，§5.2/§5.4 的判据从"`import tavily_cli` 成功"改成"`bin/tavily-cli` 存在"（等价且更省一次进程） | Qoder |
 | v0.2.2 | 2026-10-23 | **真机验证挖出一条红线级风险并据此把规则改硬**：CLI 的 `tunnel` 缺省是 `auto`（`src/tavily_cli/config.py:161`），端点被判不可达时它会**自己 spawn 一条 SSH 端口转发到网关所在主机**——实测退出码 0、本机凭空多出一个转发进程并占住端口，而调用方只是想搜个网；且退出码 3 的 `.error.hint` 原文就建议改走隧道，`--quiet` 压不掉它（它在 JSON 信封里，不在 stderr）。因此 §6.4 从"不得教 agent 加 `--tunnel on`"**升级为"每一条调用行必须显式 `--tunnel off`"**，D-S5 随之改写、新增风险 R-11；技能面 14 条示例（`SKILL.md` 2 + `references/` 12）已全部钉上该旗标，并由 `test_every_invocation_pins_the_tunnel_off` 逐行守住。对照实测：同一坏端点加 `--tunnel off` ⇒ 退出码 3 / `TRANSPORT`、SSH 进程数前后不变 | Qoder |
+| v0.2.3 | 2026-10-23 | **技能已实装进本机 Qoder agent**（SG-1 的 Qoder 这一支落地）：§3 新增"本地技能根"实测行——生效路径是 `<config root>/skills/<技能名>/SKILL.md`（本机即 `~/.qoder-cn/skills/`，与 `plugins/`、`settings.json` 同根），而**应用 UI 文案宣称的 `~/.qoder/skills` 实测不生效**（放进去、新会话也读不到）；技能清单在会话开始时冻结，目录放对后新会话才列出裸名 `tavily-search`。§9.1 的 SK-1 据此由"❌ 未执行"改为"⚠️ 部分"（登记 / 新会话列出 / `Skill` 原样加载正文三段有实机证据，"提问⇒选中并产出契约内命令"仍与 SK-7/SK-8 同批待批准）。本机另预置 `~/.config/tavily-cli/skill-state.toml`（`mode = binary`，路径先经 `--version` 退出码 0 验证），端点走内置默认且零配额 `tools` 探测退出码 0 ⇒ 按 §5.3 **不写** `config.toml`、不打断用户 | Qoder |
 
 关联文档：CLI 契约 `docs/requirements.md`（§4.2 参数、§5.1–§5.2 输出、§6 退出码、§7 配置）·
 技术方案 `docs/design.md` · 工作约定与红线 `AGENTS.md` · 发布脱敏 `scripts/publish_public.py`
@@ -64,6 +65,7 @@ Agent Skill 就是补这一层的载体：一个带 YAML frontmatter 的 `SKILL.
 | frontmatter 必填键 | 样本 300 份里 `name` 299 次、`description` 299 次（1 份缺 `name` 属异常样本） | 两者都写，且 `name` **等于技能目录名** |
 | 可选键 | `metadata` 68、`license` 18、`version` 11、`compatibility` 5、`disable-model-invocation` 6 | 用 `metadata.{author,version}`；**不依赖** `allowed-tools`（该样本 0 次出现，写了不保证被尊重） |
 | 目录布局 | 插件根 = `<runtime>-plugin/plugin.json` + `skills/<name>/SKILL.md`，技能内可选 `references/`、`scripts/`、`assets/`、`agents/`；正文用**相对路径**引用同级资源 | 技能写相对路径（`references/exit-codes.md`），不写绝对路径 |
+| 本地技能根（Qoder CN 构建，实装测得） | 生效路径是 `~/.qoder-cn/skills/<技能名>/SKILL.md`（与 `plugins/`、`settings.json` 同一个 config root）。**应用 UI 文案宣称的 `~/.qoder/skills` 实测不生效**：文件放那里、新会话也读不到；放对之后当前会话的技能清单会刷新，`Skill` 可原样加载正文 | 交付说明里给"复制到 `<config root>/skills/`"这条安装法，并提醒以 `name` == 目录名为准；不要把 UI 文案里的路径当事实写进技能 |
 
 **规格约束**：
 
@@ -299,13 +301,14 @@ Agent Skill 就是补这一层的载体：一个带 YAML frontmatter 的 `SKILL.
 
 | 用例 | 状态 | 证据 / 未执行的原因 |
 |------|------|---------------------|
+| SK-1 | ⚠️ 部分 | **登记与加载已实机验证**（2026-10-23 本机 Qoder 会话）：复制到 `~/.qoder-cn/skills/tavily-search/` 后，当前会话技能清单出现该条目、**新开会话**列出裸名 `tavily-search`（无插件前缀）且 `description` 完整、`Skill` 工具原样加载 170 行正文。**仍缺**"问一句『帮我查一下 X 的最新进展』⇒ 被选中并产出契约内命令"这一支（要真人提问，且真跑会含一次搜索 ⇒ 与 SK-7/SK-8 同批待批准） |
 | SK-2 | ✅ 已验证 | `tests/unit/test_skill_contract.py`（20 条，全程离线） |
 | SK-3 | ⚠️ 部分 | 发现块第 6 步（一无所获）与两种记录形态由 4 条子进程断言真跑；**"一次合并提问 → 建 venv → 写两份文件"这条人机交互分支未在真实 agent 会话里复现**（本机受控实跑走的是"装失败 ⇒ 改记 source 形态"分支） |
 | SK-5 | ✅ 已验证 | 零配额实跑：退出码 2、`kind=USAGE`、`results` 空、无 socket（守卫层同一性质由 `tests/guard/` 长期守着） |
 | SK-6 / SK-12 | ✅ 已验证 | 发布闸门 `SKILL_FORBIDDEN` 零命中 + 副本内 `test_skill_never_mentions_server_ops_or_credentials`；另有一条元测试守着"模式本身不被脱敏脚本改写失效" |
 | SK-9 | ⚠️ 部分 | 探测幂等、`tools` 零配额验证、`.meta.endpoint` 读回均已实跑；**"用户给出 URL"这一支**只在临时 HOME 里以受控写入复现，未经真人回答 |
 | SK-10 | ✅ 已验证 | 全流程（含状态文件与配置写入）之后 `git status --short` 仍只有既有未跟踪文件；两份文件都落在临时 HOME |
-| SK-1 / SK-4 / SK-11 | ❌ 未执行 | 需要把 `skills/` 挂进真实 agent 会话并跑触发评测；本机没有可复跑的评测装置。**这是交付的主要未知面**——`description` 的触发词命中与能力路由判定离线证不了 |
+| SK-4 / SK-11 | ❌ 未执行 | 触发评测（10 条正负样本）与"有/无原生 web search 两种宿主"的对照都需要可复跑的评测装置，本机没有。**这是交付剩余的未知面**——`description` 触发词命中与 §6.2 路由判定离线证不了 |
 | SK-7 / SK-8 | ⏸ 需批准 | 各含**一次真实 `search`**（共享配额支出）。按 D-S7 两条合并成同一次搜索执行，等你点头 |
 
 ## 10. 待使用者拍板的口径
@@ -338,3 +341,7 @@ Agent Skill 就是补这一层的载体：一个带 YAML frontmatter 的 `SKILL.
 - ✅ `scripts/publish_public.py`：按 §8 补改写规则与专属闸门。
 - ✅ （v0.2.2 追加）`AGENTS.md` §4 两条隧道坑 + 公开面覆盖文本同步；`README.md` "配置与隧道"
   补一条"缺省 `auto` ⇒ 不写旗标也会 spawn"的实测提醒；`docs/requirements.md` G-6 同步该口径。
+- ✅ （v0.2.3 追加）本机实装：技能复制到 `~/.qoder-cn/skills/tavily-search/`、状态文件
+  `~/.config/tavily-cli/skill-state.toml` 预置为 `mode = binary`（两者都在用户目录，**仓库工作树不动**）；
+  `AGENTS.md` §2 补"本地技能根"这一环境事实、§4 补一条"UI 文案的路径不等于生效路径"的坑、
+  `README.md`"给其他 agent 用"一节补安装动作本身（复制目录 + 新会话才列出）。

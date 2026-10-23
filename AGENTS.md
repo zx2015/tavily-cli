@@ -129,6 +129,7 @@ scripts/tunnel.sh down && (ss -ltn | grep -w 18000 || echo 已释放)
 | 技能里的 shell 块是**会被逐字执行**的东西 | 光靠读措辞发现不了：裸 `python3 -m tavily_cli` 在仓库根报 `No module named`、`tools` 的清单在 `.results[]` 而不是 `.tools`，都是实跑才打出来的 | `tests/unit/test_skill_contract.py` 把文档第一个 bash 块抽出来真跑（干净环境 / 两种记录形态 / 失效路径），全程离线 |
 | **不写隧道旗标 ≠ 中立**：缺省 `auto` 会自己 spawn SSH 转发 | `tunnel` 的缺省值是 `auto`；真机在不可达端点上跑 `tools` **退出码 0**，本机却凭空多出一条 `ssh -f -N … -L`（占住本地转发端口）——调用方只是 agent 的一次"搜个网"，却动了共享基础设施。加 `--tunnel off` 后同一端点 ⇒ 退出码 **3** / `TRANSPORT` 且 SSH 进程数前后不变 | 任何**会被别人 agent 原样复制**的命令示例都必须显式写 `--tunnel off`（技能面 14/14，`test_every_invocation_pins_the_tunnel_off` 逐行守）；自己排障时也要记住：`auto` 的"成功"可能是隧道替你兜的 |
 | 失败提示会主动劝你开隧道，且 `--quiet` 压不掉 | TRANSPORT 的 `hint` 原文是"确认端点可达；必要时加 `--tunnel on` 走 SSH 隧道"，它在 **JSON 信封** `.error.hint` 里（`--quiet` 只压 stderr 的提示），机读格式照样带出来 | 技能正文必须写明"不照 `hint` 行动"；写文档时别整段转述 hint——公开面的技能面闸门会拦下那个旗标字面 |
+| 宿主 UI 说的技能目录 ≠ 实际扫描的目录 | 照应用界面文案把技能放进 `~/.qoder/skills`，**新开会话照样读不到**；真正生效的是 `<config root>/skills/<技能名>/SKILL.md`（与 `plugins/`、`settings.json` 同根）。另外技能清单在**会话开始时冻结**，同一会话内放对目录也要等新会话才列出 | 安装就复制整个技能目录，并以"**新开会话能列出裸名条目 + `Skill` 能加载正文**"为验收判据，别只看文件在不在 |
 
 ## 5. 代码约定
 
