@@ -1,0 +1,23 @@
+"""默认值与退出码常量（requirements §4.5 / §6 / §7）。"""
+
+from __future__ import annotations
+
+DEFAULT_ENDPOINT = "http://127.0.0.1:18000/mcp"
+DEFAULT_TIMEOUT = 45.0
+LONG_TIMEOUT = 120.0  # crawl / map 实测显著更久
+DEFAULT_RETRIES = 1
+MAX_RETRIES = 3
+DEFAULT_CONCURRENCY = 4
+MAX_CONCURRENCY = 8
+MAX_BATCH_ITEMS = 50  # 单次 batch 的有效行上限：网关无鉴权且 dev key 额度低（§4.6/§11）
+DEFAULT_SSH_HOST = "mcp-host"
+
+EXIT_OK = 0
+EXIT_USAGE = 2
+EXIT_TRANSPORT = 3
+EXIT_PROTOCOL = 4
+EXIT_TOOL_ERROR = 5
+EXIT_POOL_DEAD = 6
+EXIT_TIMEOUT = 7
+EXIT_RATE_LIMITED = 8
+EXIT_INTERRUPTED = 130
